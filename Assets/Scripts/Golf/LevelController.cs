@@ -18,6 +18,8 @@ namespace Golf2
         public int score = 0;
         public int hightScore = 0;
 
+        private List<GameObject> m_stones = new List<GameObject>(16);
+
 
         private void Start()
         {
@@ -34,13 +36,12 @@ namespace Golf2
 
         private void OnEnable()
         {
-            GameEvents.onCollisionStone += GameOver;
             GameEvents.onStickHit += OnStickHit;
+            score = 0;
         }
 
         private void OnDisable()
         {
-            GameEvents.onCollisionStone -= GameOver;
             GameEvents.onStickHit -= OnStickHit;
         }
 
@@ -48,6 +49,15 @@ namespace Golf2
         {
             Debug.Log("Game over!");
             enabled = false;
+        }
+
+        public void ClearStones()
+        {
+            foreach (var stone in m_stones)
+            {
+                Destroy(stone);
+            }
+            m_stones.Clear();
         }
 
         public void RefreshDelay()
@@ -61,7 +71,8 @@ namespace Golf2
             
                 if(Time.time >= m_lastSpawnedTime + m_delay)
                 {
-                    spawner.Spawn();
+                    var stone = spawner.Spawn();
+                m_stones.Add(stone);
                     m_lastSpawnedTime = Time.time;
 
                 RefreshDelay();
